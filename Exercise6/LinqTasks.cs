@@ -230,7 +230,15 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<object> Task6()
         {
-            IEnumerable<object> result = null;
+            IEnumerable<object> result = Emps.Join(Depts, 
+                emp => emp.Deptno, 
+                dept => dept.Deptno,
+                (e, d) => new
+                {
+                    e.Ename,
+                    e.Job,
+                    d.Dname
+                });
             return result;
         }
 
@@ -239,11 +247,11 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<object> Task7()
         {
-            IEnumerable<object> result = Emps.Select(e => new
+            IEnumerable<object> result = Emps.GroupBy(e => e.Job).Select(e => new
             {
-                Praca = e.Job,
-                LiczbaPracownikow = Emps.Count()
-            }).GroupBy(j => j.Praca);
+                Praca = e.Key,
+                LiczbaPracownikow = e.Count()
+            });
             return result;
         }
 
