@@ -305,7 +305,14 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<object> Task11()
         {
-            IEnumerable<object> result = null;
+            IEnumerable<object> result = Emps.GroupBy(e => e.Deptno)
+                .Where(e => e.Count() > 1)
+                .Select(e => new
+                {
+                    name = Depts.FirstOrDefault(d => d.Deptno == e.Key)?.Dname.ToUpper(),
+                    numOfEmployees = e.Count()
+                })
+                .ToList();
             return result;
         }
 
@@ -318,7 +325,7 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<Emp> Task12()
         {
-            IEnumerable<Emp> result = null;
+            IEnumerable<Emp> result = Emps.WithSubordinates().OrderBy(e => e.Ename).ThenByDescending(e => e.Salary);;
             return result;
         }
 
@@ -331,8 +338,9 @@ namespace Exercise6
         /// </summary>
         public static int Task13(int[] arr)
         {
-            int result = 0;
-            //result=
+            int result = arr.GroupBy(x => x)
+                .Single(g => g.Count() % 2 != 0)
+                .Key;
             return result;
         }
 
@@ -342,8 +350,11 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<Dept> Task14()
         {
-            IEnumerable<Dept> result = null;
-            //result =
+            IEnumerable<Dept> result = Depts
+                .Where(dept => Emps.Count(emp => emp.Deptno == dept.Deptno) == 5 ||
+                               Emps.Count(emp => emp.Deptno == dept.Deptno) == 0)
+                .OrderBy(dept => dept.Dname)
+                .ToList();
             return result;
         }
     }
@@ -351,5 +362,10 @@ namespace Exercise6
     public static class CustomExtensionMethods
     {
         //Put your extension methods here
+        
+        public static IEnumerable<Emp> WithSubordinates(this IEnumerable<Emp> employees)
+        {
+            return employees.Where(e => employees.Any(sub => sub.Mgr == e));
+        }
     }
 }
